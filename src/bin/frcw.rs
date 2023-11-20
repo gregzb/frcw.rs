@@ -206,7 +206,7 @@ fn main() {
     if writer_str == "jsonl" || writer_str == "jsonl-full" {
         // hotfix for pcompress writing
         // TODO: move this into init
-        println!("{}", json!({ "meta": meta }).to_string());
+        // println!("{}", json!({ "meta": meta }).to_string());
     }
     multi_chain(&graph, &partition, writer, &params, n_threads, batch_size);
 }

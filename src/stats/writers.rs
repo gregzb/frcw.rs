@@ -204,12 +204,12 @@ impl StatsWriter for JSONLWriter {
             );
         }
         // println!("{}", json!({ "init": stats }).to_string());
-        let mut partition = partition.clone();
-        println!("{}", json!({ "partition": json!({
-            "num_dists": partition.num_dists,
-            "assignments": partition.assignments,
-            // "dist_nodes": partition.dist_nodes
-        }), "num_cut_edges": to_value(partition.cut_edges(graph).len()).unwrap() }).to_string());
+        // let mut partition = partition.clone();
+        // println!("{}", json!({ "partition": json!({
+        //     "num_dists": partition.num_dists,
+        //     "assignments": partition.assignments,
+        //     // "dist_nodes": partition.dist_nodes
+        // }), "num_cut_edges": to_value(partition.cut_edges(graph).len()).unwrap() }).to_string());
         Ok(())
     }
 
