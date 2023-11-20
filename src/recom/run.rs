@@ -345,7 +345,7 @@ pub fn multi_chain(
             let mut proposals = Vec::<RecomProposal>::new();
             for _ in 0..n_threads {
                 let packet: ResultPacket = result_recv.recv().unwrap();
-                counts = counts + packet.counts;
+                // counts = counts + packet.counts;
                 proposals.extend(packet.proposals);
             }
             let mut loops = counts.sum();

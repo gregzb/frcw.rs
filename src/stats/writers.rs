@@ -71,6 +71,8 @@ pub struct JSONLWriter {
     spanning_tree_counts: bool,
     /// Determines whether to compute cut edge counts for each step.
     cut_edges_count: bool,
+    /// last line that was reported
+    last_reported: u64,
 }
 
 impl TSVWriter {
@@ -107,6 +109,7 @@ impl JSONLWriter {
             nodes: nodes,
             spanning_tree_counts: spanning_tree_counts,
             cut_edges_count: cut_edges_count,
+            last_reported: 0
         }
     }
 
@@ -200,7 +203,13 @@ impl StatsWriter for JSONLWriter {
                 to_value(cut_edges_count).unwrap(),
             );
         }
-        println!("{}", json!({ "init": stats }).to_string());
+        // println!("{}", json!({ "init": stats }).to_string());
+        let mut partition = partition.clone();
+        println!("{}", json!({ "partition": json!({
+            "num_dists": partition.num_dists,
+            "assignments": partition.assignments,
+            // "dist_nodes": partition.dist_nodes
+        }), "num_cut_edges": to_value(partition.cut_edges(graph).len()).unwrap() }).to_string());
         Ok(())
     }
 
@@ -212,6 +221,7 @@ impl StatsWriter for JSONLWriter {
         proposal: &RecomProposal,
         counts: &SelfLoopCounts,
     ) -> Result<()> {
+        let step_num = step;
         let mut step = json!({
             "step": step,
             "dists": (proposal.a_label, proposal.b_label),
@@ -236,7 +246,25 @@ impl StatsWriter for JSONLWriter {
                 to_value(cut_edges_count).unwrap(),
             );
         }
-        println!("{}", json!({ "step": step }).to_string());
+        step.as_object_mut().unwrap().insert(
+            "partition".to_string(),
+            json!({
+                "num_dists": partition.num_dists,
+                "assignments": partition.assignments,
+                // "dist_nodes": partition.dist_nodes
+            }),
+        );
+        if step_num - self.last_reported >= 10000 {
+            let mut partition = partition.clone();
+            // println!("hi");
+            println!("{}", json!({ "partition": json!({
+                "num_dists": partition.num_dists,
+                "assignments": partition.assignments,
+                // "dist_nodes": partition.dist_nodes
+            }), "num_cut_edges": to_value(partition.cut_edges(graph).len()).unwrap() }).to_string());
+            self.last_reported = step_num;
+        }
+        // println!("{}", json!({ "step": step_num }).to_string());
         Ok(())
     }
 
